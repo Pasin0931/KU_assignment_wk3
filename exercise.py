@@ -405,6 +405,16 @@ def compute_exercise_duration(_exercise, _excess_cal):
         >>> compute_exercise_duration('housework', 300)
         84
     """
+    
+    full_minute = 60
+    
+    if _exercise in BURNED_CALORIES_PER_HOUR:
+        for i in BURNED_CALORIES_PER_HOUR:
+            if i == _exercise:
+                kcal = BURNED_CALORIES_PER_HOUR[i]
+                result = (_excess_cal * full_minute) / kcal
+    
+    return math.ceil(result)
     pass
 
 
@@ -429,6 +439,11 @@ def acquire_exercise_summary(_exercise, _excess_cal):
         >>> print(__summary2)
         You do not need to remove excess calories.
     """
+    
+    if _excess_cal == 0:
+        return f"You do not need to remove excess calories."
+    else:
+        return f"You consumed {_excess_cal} kcal in excess and need to do {_exercise} for {compute_exercise_duration(_exercise, _excess_cal)} minutes."
     pass
 
 
@@ -461,6 +476,9 @@ def display_summary(_exercise, total_cal_sum, activity_level, tdee):
         If you are lightly active (1-3 workouts/week), your suggested daily calories are 1890 kcal.
         You consumed 240 kcal in excess and need to do running for 27 minutes.
     """
+    
+    
+    
     pass
 
 
