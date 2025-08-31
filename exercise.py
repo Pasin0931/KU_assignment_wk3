@@ -101,21 +101,63 @@ def ask_personal_info():
         :return: name, gender, age, weight, height and exercise type
         :rtype: tuple(string, string, int, float, float, string)
     """
+    # store user's name in name, and check if the input is empty or not.
+    while True:
+        name = str(input("Enter your name: ")).title()
+        if name == "":
+            print("Please provide valid name.")
+        else: break
+
+    # store user's gender in gender, make letter into uppercase, and check if the input is either M or F.
+    while True:
+        gender = str(input("Enter your gender (M/F): ")).upper()
+        if gender not in ("M", "F"):
+            print("Only (M, F) is allowed.")
+        else: break
+
+    # store user's age in age, and check if the input is valid or not.
+    while True:
+        try:
+            age = int(input("Enter your age: "))
+            if type(age) == int:
+                break
+        except ValueError:
+            print("Please provide valid syntax.")
     
-    name = str(input("Enter your name: ")).title()
-    gender = str(input("Enter your gender (M/F): ")).upper()
-    if gender not in ("M", "F"):
-        gender = "M"
-    age = int(input("Enter your age: "))
-    weight = float(input("Enter your weight (kg): "))
-    height = float(input("Enter your height (cm): "))
-    
+    # store user's weight in weight, and check if the input is valid or not.
+    while True:
+        try:
+            weight = float(input("Enter your weight (kg): "))
+            if type(weight) == int or type(weight) == float:
+                break
+        except ValueError:
+            print("Please provide valid syntax.")
+
+    # store user's height in height, and check if the input is valid or not.
+    while True:
+        try:
+            height = float(input("Enter your height (cm): "))
+            if type(height) == int or type(height) == float:
+                break
+        except ValueError:
+            print("Please provide valid syntax.")
+
+    # display every exercises avalible
     display_exercise_list()
     
-    exercise = str(input("How will you exercise? ")).lower()
-    
+    # get user's exercise choices, check if is in the dict or not, or input is empty or not
+    while True:
+        try:
+            exercise = str(input("How will you exercise? ")).lower()
+            if exercise not in BURNED_CALORIES_PER_HOUR.keys() or exercise == "":
+                print("Please provide avalible exercise.")
+            else:
+                break
+        except ValueError:
+            print("Please provide valid syntax.")
+
+    # return user inputed variables 
     return name, gender, age, weight, height, exercise
-    pass
 
 
 def compute_bmr(weight, height, gender='M', age=30):
@@ -151,7 +193,7 @@ def compute_bmr(weight, height, gender='M', age=30):
         >>> compute_bmr(55.2, 165)
         1449.4014000000002
     """
-    
+    # seperate calculation into male and female section.
     if gender == "M":
         bmr_val = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
     
@@ -159,7 +201,6 @@ def compute_bmr(weight, height, gender='M', age=30):
         bmr_val = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
     
     return bmr_val
-    pass
 
 
 def compute_tdee(bmr):
@@ -188,15 +229,19 @@ def compute_tdee(bmr):
         >>> compute_tdee(1413.1662999999999)
         (1696, 1944, 2191, 2438, 2686)
     """
-    
+    # calculate tdee of sedentary, lightly-active, moderately-active, very-active, extremely-active
     sedentary = bmr * 1.2
     lightly_active = bmr * 1.375
     moderately_active = bmr * 1.55
     very_active = bmr * 1.725
     extremely_active = bmr * 1.9
     
-    return math.ceil(sedentary), math.ceil(lightly_active), math.ceil(moderately_active), math.ceil(very_active), math.ceil(extremely_active)
-    pass
+    # round every value to full number and return
+    return (math.ceil(sedentary),
+            math.ceil(lightly_active),
+            math.ceil(moderately_active),
+            math.ceil(very_active),
+            math.ceil(extremely_active))
 
 
 def display_food_items(calories_dict, food_type):  
@@ -308,9 +353,13 @@ def acquire_meal_summary(meal_num, entree, entree_cal, dessert, dessert_cal,
         Meal calories: 1090 kcal.
         Cumulative calories: 2330 kcal.
     """
-    
-    return f"\nMeal #{meal_num} Summary:\nEntree: {entree}, {entree_cal} kcal.\nDessert: {dessert}, {dessert_cal} kcal.\nDrink: {drink}, {drink_cal} kcal.\nMeal calories: {entree_cal + dessert_cal + drink_cal} kcal.\nCumulative calories: {total_cal_sum} kcal."
-    pass
+    # return every values that passed into the function in sentences
+    return (f"\nMeal #{meal_num} Summary:"
+            f"\nEntree: {entree}, {entree_cal} kcal."
+            f"\nDessert: {dessert}, {dessert_cal} kcal."
+            f"\nDrink: {drink}, {drink_cal} kcal."
+            f"\nMeal calories: {entree_cal + dessert_cal + drink_cal} kcal."
+            f"\nCumulative calories: {total_cal_sum} kcal.")
 
 
 def ask_diet_info():  
@@ -350,7 +399,6 @@ def ask_diet_info():
         print(summary)
 
     return total_cal_sum
-    pass
 
 
 def compute_excess_calories(consumed_calories, needed_calories):
@@ -373,14 +421,14 @@ def compute_excess_calories(consumed_calories, needed_calories):
         >>> compute_excess_calories(2790, 2371)
         419
     """
-    
+    # calculate if there's excess calories
     kcal = needed_calories - consumed_calories
     
+    # if the result is above 0 means there are no excess calories
     if kcal >= 0:
         return 0
     elif kcal < 0:
         return kcal * -1  
-    pass
 
 
 def compute_exercise_duration(_exercise, _excess_cal):
@@ -401,17 +449,20 @@ def compute_exercise_duration(_exercise, _excess_cal):
         >>> compute_exercise_duration('housework', 300)
         84
     """
-    
+    # turn 1 hour into 60 minutes
     full_minute = 60
     
+    # check if _exercise is in NURNED_CALORIES_PER HOUR or not
     if _exercise in BURNED_CALORIES_PER_HOUR:
+        # loop until find index where exercise is present
         for i in BURNED_CALORIES_PER_HOUR:
             if i == _exercise:
+                # pass calories of BURNED_CALORIES_PER_HOUR of that exercise and compute
                 kcal = BURNED_CALORIES_PER_HOUR[i]
                 result = (_excess_cal * full_minute) / kcal
     
+    # floor result value and return
     return math.ceil(result)
-    pass
 
 
 def acquire_exercise_summary(_exercise, _excess_cal):
@@ -435,12 +486,12 @@ def acquire_exercise_summary(_exercise, _excess_cal):
         >>> print(__summary2)
         You do not need to remove excess calories.
     """
-    
+    # check if there's an excess calories
     if _excess_cal == 0:
         return f"You do not need to remove excess calories."
     else:
-        return f"You consumed {_excess_cal} kcal in excess and need to do {_exercise} for {compute_exercise_duration(_exercise, _excess_cal)} minutes."
-    pass
+        return (f"You consumed {_excess_cal} kcal in excess and need to do "
+                f"{_exercise} for {compute_exercise_duration(_exercise, _excess_cal)} minutes.")
 
 
 def display_summary(_exercise, total_cal_sum, activity_level, tdee):
@@ -472,43 +523,54 @@ def display_summary(_exercise, total_cal_sum, activity_level, tdee):
         If you are lightly active (1-3 workouts/week), your suggested daily calories are 1890 kcal.
         You consumed 240 kcal in excess and need to do running for 27 minutes.
     """
-    
+    # pass down excess calories value into excess
     excess = compute_excess_calories(total_cal_sum, tdee)
+
+    # pass down return value of acquire_exercise_summary into exercise_msg
+    # if no excess calories will be "You do not need to remove excess calories."
     exercise_msg = acquire_exercise_summary(_exercise, excess)
     
+    # return activity level from function's parameter
     if activity_level == 1:
         return (f'\nIf you are sedentary (little or no exercise), your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
+    
     elif activity_level == 2:
         return (f'\nIf you are lightly active (1-3 workouts/week), your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
+    
     elif activity_level == 3:
         return (f'\nIf you are moderately active (4-5 workouts/week), your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
+    
     elif activity_level == 4:
         return (f'\nIf you are very active (6-7 workouts/week), your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
+    
     elif activity_level == 5:
         return (f'\nIf you are extremely active (physical job or training), your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
-    pass
 
 
 # Main part
 
+# store values return from ask_personal_info into these variables
 name, gender, age, weight, height, exercise = ask_personal_info()
 
 # Fill in the code before ask_diet_info() here
 day_calories = ask_diet_info()
 # Fill in the code after here
 
+# get bmr value and pass into bmr
 bmr = compute_bmr(weight, height, gender, age)
+# get tdee value and pass into tdee_values
 tdee_values = compute_tdee(bmr)
 
 print("===============")
 print(f"Overall Summary:")
 print(f"{name}, you consumed {day_calories} kcal.")
 
+# loop to display each level from level 1 to 5
 for level in range(1, 6):
     print(display_summary(exercise, day_calories, level, tdee_values[level-1]))
 

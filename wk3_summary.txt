@@ -1,0 +1,58 @@
+What I have completed:
+
+- Functions
+
+    --> ask_personal_info
+        I made the function to return values of name, gender, age, weight, height, choice-of-exercise
+        which are according to what the user input.
+        I also integraded "try, except" in case of the input value is invalid.
+        If the input value is invalid, it will loop the process until user enter valid choice.
+
+    --> compute_bmr
+        The function correctly return user's bmr value for both male and female cases.
+        I also set the default gender to be male and default age of 30
+
+    --> compute_tdee
+        Calculated tdee values of sedentary, lightly-active, moderately-active, very-active, extremely-active
+        are correctly defined and return, each value will be rounded up to a full number no matter if the decimal is not exceed 5.
+
+    --> acquire_meal_summary
+        Correctly return value of meal number, entree, dessert, drink, meal-calories, cumulative-calories
+        in string sentences.
+
+    --> compute_excess_calories
+        Calculate kcal from, needed_calories - consumed_calories
+        the check if kcal is above or equal to 0, this mean the user doesn't have excess calories
+        else means, user have excess calories.
+        After passing the checking condotion, the value will be return either 0 or excess kcal value.
+
+    --> compute_exercise_duration
+        The function will return the total time in minute, for how much time user should do exercise to get rid of excess calories,
+        by calculate from calories burned per hour of the choosen exercise, then return the full number if the calculated value.
+
+    --> acquire_exercise_summary
+        This check if the excess calories is 0 or not, if so will return "You do not need to remove excess calories."
+        If there are excess calories, the function will return
+        user's excess calories, choice of exercise, time duration to remove excess calories in string sentence.
+
+    --> display_summary
+        This function will return a string format of the summary of user's exercise frequency level, which was seperated into 5 cases,
+            - sedentary (little or no exercise)
+            - lightly active (1-3 workouts/week)
+            - moderately active (4-5 workouts/week)
+            - very active (6-7 workouts/week)
+            - extremely active (physical job or training)
+        all sentence will be attach with user's tdee value and display if user should remove excess calories by exercise or not.
+
+
+- Main Part
+    1. name, gender, age, weight, height, exercise are defined and value will be passed from ask_personal_info function.
+    2. User's total calories will be passed from ask_diet_info into day_calories,
+      which ask_diet_info will ask how many meal do user have per day, and what did user eat, then compute the calories and return its value.
+    3. bmr value will be calculate and stored in "bmr" variable.
+    4. tdee value will also be calculated and stored in "tdee_values" varaible.
+    5. Display the part that indicate "Overall Summary", the name of user, user's total consumed calories.
+    6. Display user's summary from activity level 1 to 5, by using display_summary function.
+
+
+What I haven't completed: None
