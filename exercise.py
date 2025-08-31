@@ -78,7 +78,6 @@ def display_exercise_list():
     
     exercise_list = list(BURNED_CALORIES_PER_HOUR.keys())
     print(exercise_list)
-    
     pass
 
 
@@ -105,8 +104,8 @@ def ask_personal_info():
     
     name = str(input("Enter your name: ")).title()
     gender = str(input("Enter your gender (M/F): ")).upper()
-    if gender != "M" or gender != "F":
-        gender == "M"
+    if gender not in ("M", "F"):
+        gender = "M"
     age = int(input("Enter your age: "))
     weight = float(input("Enter your weight (kg): "))
     height = float(input("Enter your height (cm): "))
@@ -154,12 +153,10 @@ def compute_bmr(weight, height, gender='M', age=30):
     """
     
     if gender == "M":
-        bmr_val = 88.362 + (13.397 * weight)
-        + (4.799 * height) - (5.677 * age)
+        bmr_val = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
     
     elif gender == "F":
-        bmr_val = 447.593 + (9.247 * weight)
-        + (3.098 * height) - (4.330 * age)
+        bmr_val = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
     
     return bmr_val
     pass
@@ -198,7 +195,7 @@ def compute_tdee(bmr):
     very_active = bmr * 1.725
     extremely_active = bmr * 1.9
     
-    return int(sedentary, lightly_active, moderately_active, very_active, extremely_active)
+    return math.ceil(sedentary), math.ceil(lightly_active), math.ceil(moderately_active), math.ceil(very_active), math.ceil(extremely_active)
     pass
 
 
@@ -312,8 +309,7 @@ def acquire_meal_summary(meal_num, entree, entree_cal, dessert, dessert_cal,
         Cumulative calories: 2330 kcal.
     """
     
-    return f"Meal#{meal_num} Summary\nEntree:{entree}, {entree_cal} kcal.\nDessert: {dessert}, {dessert_cal} kcal.\nDrink: {drink}, {drink_cal} kcal.\nMeal calories: {entree_cal + dessert_cal + drink_cal}\nCumulative calories: {total_cal_sum}."
-    
+    return f"\nMeal #{meal_num} Summary:\nEntree: {entree}, {entree_cal} kcal.\nDessert: {dessert}, {dessert_cal} kcal.\nDrink: {drink}, {drink_cal} kcal.\nMeal calories: {entree_cal + dessert_cal + drink_cal} kcal.\nCumulative calories: {total_cal_sum} kcal."
     pass
 
 
@@ -354,6 +350,7 @@ def ask_diet_info():
         print(summary)
 
     return total_cal_sum
+    pass
 
 
 def compute_excess_calories(consumed_calories, needed_calories):
@@ -383,7 +380,6 @@ def compute_excess_calories(consumed_calories, needed_calories):
         return 0
     elif kcal < 0:
         return kcal * -1  
-    
     pass
 
 
@@ -477,16 +473,44 @@ def display_summary(_exercise, total_cal_sum, activity_level, tdee):
         You consumed 240 kcal in excess and need to do running for 27 minutes.
     """
     
+    excess = compute_excess_calories(total_cal_sum, tdee)
+    exercise_msg = acquire_exercise_summary(_exercise, excess)
     
-    
+    if activity_level == 1:
+        return (f'\nIf you are sedentary (little or no exercise), your suggested daily calories are {tdee} kcal.\n'
+                f'{exercise_msg}')
+    elif activity_level == 2:
+        return (f'\nIf you are lightly active (1-3 workouts/week), your suggested daily calories are {tdee} kcal.\n'
+                f'{exercise_msg}')
+    elif activity_level == 3:
+        return (f'\nIf you are moderately active (4-5 workouts/week), your suggested daily calories are {tdee} kcal.\n'
+                f'{exercise_msg}')
+    elif activity_level == 4:
+        return (f'\nIf you are very active (6-7 workouts/week), your suggested daily calories are {tdee} kcal.\n'
+                f'{exercise_msg}')
+    elif activity_level == 5:
+        return (f'\nIf you are extremely active (physical job or training), your suggested daily calories are {tdee} kcal.\n'
+                f'{exercise_msg}')
     pass
 
 
 # Main part
 
+name, gender, age, weight, height, exercise = ask_personal_info()
+
 # Fill in the code before ask_diet_info() here
 day_calories = ask_diet_info()
 # Fill in the code after here
+
+bmr = compute_bmr(weight, height, gender, age)
+tdee_values = compute_tdee(bmr)
+
+print("===============")
+print(f"Overall Summary:")
+print(f"{name}, you consumed {day_calories} kcal.")
+
+for level in range(1, 6):
+    print(display_summary(exercise, day_calories, level, tdee_values[level-1]))
 
 
 if __name__ == "__main__":
