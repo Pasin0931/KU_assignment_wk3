@@ -69,16 +69,14 @@ BURNED_CALORIES_PER_HOUR = {'aerobics': 600,
                             }
 
 
-def display_exercise_list():  
+def display_exercise_list():
     """ Display list of exercises.
 
         :param: None
         :return: None
     """
-    
     exercise_list = list(BURNED_CALORIES_PER_HOUR.keys())
     print(exercise_list)
-    pass
 
 
 def ask_personal_info():
@@ -108,14 +106,14 @@ def ask_personal_info():
             print("Please provide valid name.")
         else: break
 
-    # store user's gender in gender, make letter into uppercase, and check if the input is either M or F.
+    # store user's gender value, make letter into uppercase, and check if the input is either M or F
     while True:
         gender = str(input("Enter your gender (M/F): ")).upper()
         if gender not in ("M", "F"):
             print("Only (M, F) is allowed.")
         else: break
 
-    # store user's age in age, and check if the input is valid or not.
+    # store user's age in age, and check if the input is valid or not
     while True:
         try:
             age = int(input("Enter your age: "))
@@ -123,8 +121,8 @@ def ask_personal_info():
                 break
         except ValueError:
             print("Please provide valid syntax.")
-    
-    # store user's weight in weight, and check if the input is valid or not.
+
+    # store user's weight in weight, and check if the input is valid or not
     while True:
         try:
             weight = float(input("Enter your weight (kg): "))
@@ -532,23 +530,28 @@ def display_summary(_exercise, total_cal_sum, activity_level, tdee):
     
     # return activity level from function's parameter
     if activity_level == 1:
-        return (f'\nIf you are sedentary (little or no exercise), your suggested daily calories are {tdee} kcal.\n'
+        return (f'\nIf you are sedentary (little or no exercise),'
+                f'your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
     
     elif activity_level == 2:
-        return (f'\nIf you are lightly active (1-3 workouts/week), your suggested daily calories are {tdee} kcal.\n'
+        return (f'\nIf you are lightly active (1-3 workouts/week), '
+                f'your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
     
     elif activity_level == 3:
-        return (f'\nIf you are moderately active (4-5 workouts/week), your suggested daily calories are {tdee} kcal.\n'
+        return (f'\nIf you are moderately active (4-5 workouts/week), '
+                f'your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
     
     elif activity_level == 4:
-        return (f'\nIf you are very active (6-7 workouts/week), your suggested daily calories are {tdee} kcal.\n'
+        return (f'\nIf you are very active (6-7 workouts/week), '
+                f'your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
     
     elif activity_level == 5:
-        return (f'\nIf you are extremely active (physical job or training), your suggested daily calories are {tdee} kcal.\n'
+        return (f'\nIf you are extremely active (physical job or training), '
+                f'your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
 
 
