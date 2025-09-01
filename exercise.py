@@ -530,7 +530,7 @@ def display_summary(_exercise, total_cal_sum, activity_level, tdee):
     
     # return activity level from function's parameter
     if activity_level == 1:
-        return (f'\nIf you are sedentary (little or no exercise),'
+        return (f'\nIf you are sedentary (little or no exercise), '
                 f'your suggested daily calories are {tdee} kcal.\n'
                 f'{exercise_msg}')
     
