@@ -1,3 +1,188 @@
+FOOD_DATA = {
+    'entrees': {
+        'porridge': 200,
+        'grilled pork': 320,
+        'pork bun': 200,
+        'cereal': 250,
+        'egg and sausage': 550,
+        'basil pork': 580,
+        'chicken rice': 590,
+        'bbq pork rice': 540,
+        'garlic pork rice': 520,
+        'rice and curry': 480,
+        'noodle soup': 270,
+        'suki': 345,
+        'rat na noodle': 400,
+        'fried noodle': 620,
+        'fried rice': 550,
+        'somtam': 110,
+        'yam woon sen': 170,
+        'chicken salad': 120,
+        'instant noodle': 250,
+        'spaghetti': 430,
+        'ham sandwich': 290,
+        'burger and fries': 620,
+        'pizza': 700,
+        'pork steak': 540,
+        'fried chicken': 710,
+    },
+    'desserts': {
+        'fruit': 80,
+        'mango sticky rice': 170,
+        'potato chips': 180,
+        'ice cream': 260,
+        'cookies': 240,
+        'brownie': 160,
+        'donut': 180,
+        'croissant': 270,
+        'cake': 370,
+        'none': 0,
+    },
+    'drinks': {
+        'milk': 160,
+        'soy_milk': 100,
+        'juice': 110,
+        'soda': 130,
+        'black coffee': 15,
+        'iced capucino': 150,
+        'matcha': 5,
+        'matcha latte': 130,
+        'smoothie': 115,
+        'water': 0,
+    }
+}
+
+EXERCISE_DATA = {
+    'aerobics': 600,
+    'badminton': 315,
+    'cycling': 560,
+    'housework': 215,
+    'running': 550,
+    'swimming': 420,
+    'walking': 230
+}
+
+def format_exercise_data(data):
+    list_data = list(data)
+    
+    first_line = list_data[0:-1:2]
+    first_line.append(list_data[-1])
+    
+    second_line = list_data[1:-1:2]
+    
+    count = 1
+    for i in range(0, len(first_line)):
+        first_line[i] = f"{count}. {first_line[i]}"
+        count += 2
+    
+    count = 2
+    for i in range(0, len(second_line)):
+        second_line[i] = f"{count}. {second_line[i]}"
+        count += 2
+    
+    print(line_long_up)
+    
+    for i in first_line:
+        print(f"|  {i:<13}", end="")
+    
+    print("│               │", end="")
+    print()
+    
+    for i in second_line:
+        print(f"|  {i:<13}", end="")
+    
+    spaces = 15 * " "
+    print(f"│{spaces}│{spaces}|")
+    print(line_long_down)
+
+
+def format_entree_data(data):
+    line_1 = data[0:-1:5]
+    line_2 = data[1:-1:5]
+    line_3 = data[2:-1:5]
+    line_4 = data[3:-1:5]
+    line_5 = data[4:-1:5]
+    line_5.append(data[-1])
+    
+    count = 1
+    for i in range(0, len(line_1)):
+        line_1[i] = f"{count}. {line_1[i]}"
+        count += 5
+        
+    count = 2
+    for i in range(0, len(line_2)):
+        line_2[i] = f"{count}. {line_2[i]}"
+        count += 5
+        
+    count = 3
+    for i in range(0, len(line_3)):
+        line_3[i] = f"{count}. {line_3[i]}"
+        count += 5
+        
+    count = 4
+    for i in range(0, len(line_4)):
+        line_4[i] = f"{count}. {line_4[i]}"
+        count += 5
+        
+    count = 5
+    for i in range(0, len(line_5)):
+        line_5[i] = f"{count}. {line_5[i]}"
+        count += 5
+    
+    print(line_long_up)
+    
+    for i in line_1:
+        print(f"|  {i:<21}", end="")
+    print("|")
+    
+    for i in line_2:
+        print(f"|  {i:<21}", end="")
+    print("|")
+    
+    for i in line_3:
+        print(f"|  {i:<21}", end="")
+    print("|")
+    
+    for i in line_4:
+        print(f"|  {i:<21}", end="")
+    print("|")
+    
+    for i in line_5:
+        print(f"|  {i:<21}", end="")
+    print("|")
+    
+    print(line_long_down)
+    
+
+def format_dessert_drink_data(data):
+    line_1 = data[0:-1:2]
+    line_2 = data[1:-1:2]
+    line_2.append(data[-1])
+    
+
+    count = 1
+    for i in range(0, len(line_1)):
+        line_1[i] = f"{count}. {line_1[i]}"
+        count += 2
+        
+    count = 2
+    for i in range(0, len(line_2)):
+        line_2[i] = f"{count}. {line_2[i]}"
+        count += 2
+    
+    print(line_long_up)
+    
+    for i in line_1:
+        print(f"|  {i:<21}", end="")
+    print("|")
+    
+    for i in line_2:
+        print(f"|  {i:<21}", end="")
+    print("|")
+    
+    print(line_long_down)
+    
+
 def ask_usr():
     print("--- Setting up your profile ---")
 
@@ -70,7 +255,7 @@ def ask_activity_level(username, tdee):
             print()
             print(invalid)
 
-    print(f"Profile created for {username}. Your TDEE is {tdee} kcal.\n")
+    print(f"Profile created for {username}. Your TDEE is {tdee} kcal.\n") # tdee --------------------------
     return activity_level
 
 
@@ -92,10 +277,228 @@ def main_page():
         except ValueError:
             print()
             print(invalid)
+            
+    return choice
 
 
-invalid = "Invalid input."
+def add_meal():
+    print("--- Adding Your Meals ---")
+    while True:
+        try:
+            ymd = input("Enter the date (YYYY-MM-DD): ").split("-")
+            
+            year, month, day = map(int, ymd)
+            
+            if year > 0 and 1 <= month <= 12 and 1 <= day <= 31:
+                break
+            else:
+                print("Please enter a proper date.")
+                
+        except ValueError:
+            print(invalid)
 
-usr_name, usr_gender, usr_age, usr_weight, usr_height = ask_usr()
-usr_activity_level = ask_activity_level(usr_name, 100)
-main_page()
+    while True:
+        try:
+            meal_amount = int(input("How many more meals to add? "))
+            break
+        except ValueError:
+            print(invalid)
+
+    user_meals = []
+    for meal_num in range (1, meal_amount + 1):
+        this_meal = []
+
+        print(f"\n--- Meal #{meal_num} ---\n")
+
+        print("Entree Choices:")
+        format_entree_data(entree_keys)
+        while True:
+            try:
+                entree_choice = int(input("Choose a Entree by number (1-25): "))
+                if entree_choice > 0 and entree_choice < 26:
+                    break
+            except ValueError:
+                print(invalid)
+        this_meal.append(entree_choice)
+
+        print("\nDessert Choices:")
+        format_dessert_drink_data(dessert_keys)
+        while True:
+            try:
+                dessert_choice = int(input("Choose a Dessert by number (1-10): "))
+                if dessert_choice > 0 and dessert_choice < 11:
+                    break
+            except ValueError:
+                print(invalid)
+        this_meal.append(dessert_choice)
+
+        print("\nDrink Choices:")
+        format_dessert_drink_data(drink_keys)
+        while True:
+            try:
+                drink_choice = int(input("Choose a Dessert by number (1-10): "))
+                if drink_choice > 0 and drink_choice < 11:
+                    break
+            except ValueError:
+                print(invalid)
+        this_meal.append(drink_choice)
+        user_meals.append(this_meal)
+
+    print("\nMeals added successfully!\n")
+    return [year, month, day], user_meals
+
+
+def add_exercise():
+    print("--- Adding Your Exercise ---")
+    while True:
+        try:
+            ymd = input("Enter the date (YYYY-MM-DD): ").split("-")
+            
+            year, month, day = map(int, ymd)
+            
+            if year > 0 and 1 <= month <= 12 and 1 <= day <= 31:
+                break
+            else:
+                print("Please enter a proper date.")
+                
+        except ValueError:
+            print(invalid)
+    
+    print("\nExercise Choices:")
+    format_exercise_data(EXERCISE_DATA)
+    while True:
+        try:
+            exercise_choice = int(input("Choose a Exercise by number (1-7): "))
+            if exercise_choice > 0 and exercise_choice < 8:
+                break
+        except ValueError:
+            print(invalid)
+        
+    while True:
+        try:
+            exercise_duration = float(input("Enter duration for running in minutes: "))
+            break
+        except ValueError:
+            print(invalid)
+
+    print(f"\nLogged running for {exercise_duration:.1f} minutes, burning 550 kcal.\n") # ----------------------------------------------
+    return [year, month, day], exercise_choice, exercise_duration # didnt calulated burned cal yet.
+
+
+# def remove_entry():
+
+
+
+def show_day_summary(db):
+    line_ = "─" * 69 # 70
+    line_1 = "─" * 69 # 52
+    line_2 = "─" * 69 # 17
+
+    li_up = f"┌{line_}┐"
+    li_mid = f"├{line_1}┤"
+    li_down = f"└{line_}┘"
+
+    print("--- Daily Summary ---")
+    # while True:
+    #     try:
+    #         date_in = input("Enter the date (YYYY-MM-DD): ").split("-")
+    #         date_in[0] = int(date_in[0])
+    #         date_in[1] = int(date_in[1])
+    #         date_in[2] = int(date_in[2])
+    #         if date_in in db[0]:
+    #             break
+    #         else:
+    #             print("No match... try again.")
+    #     except ValueError:
+    #         print(invalid)
+
+    # text_summary = f"Summary for {date_in[0]}-{date_in[1]}-{date_in[2]}"
+
+    print()
+    print(li_up)
+    print("|" + "Summary for 2025-10-10".center(69) + "|")
+    print(li_mid)
+    print("|" + "Meals Consumed".center(69) + "|")
+    print(li_mid)
+    print("| " + "Meal #".ljust(9) + "| " + "Entree".ljust(19) + "| " + "Dessert".ljust(19) + "| " + "Drink".ljust(15) + "|")
+    print(li_mid)
+
+    print("| " + "1".ljust(9) + "| " + "Fried Chicken".ljust(19) + "| " + "None".ljust(19) + "| " + "Soda".ljust(15) + "|")
+    
+    print(li_mid)
+    print("| " + "Exercises Logged".ljust(67) + " |")
+
+    print("|  " + "1. running".ljust(47) + "( 550 kcal burned )".ljust(19) + " |")
+
+    print(li_mid)
+    print("|" + "Totals".center(69) + "|")
+    print(li_mid)
+    print("| " + "Consumed:".ljust(16) + "100".ljust(47) + "kcal |")
+    print("| " + "Burned:".ljust(16) + "200".ljust(47) + "kcal |")
+    print("| " + "TDEE Goal:".ljust(16) + "300".ljust(47) + "kcal |")
+    print("| " + "Net Balance:".ljust(16) + "400".ljust(47) + "kcal |")
+    print(li_down)
+    print()
+
+
+def show_full_history(db):
+    line = "─" * 50
+    li_up = f"┌{line}┐"
+    li_mid = f"├{line}┤"
+    li_down = f"└{line}┘"
+
+    print()
+    print(li_up)
+    print("│" + "Overall Summary".center(50) + "│")
+    print(li_mid)
+    print("│ Days Logged:".ljust(30) + f"{2}".ljust(21) + "│")
+    print("│ Avg Daily Consumption:".ljust(30) + f"{562}".ljust(16) + "kcal │")
+    print("│ Avg Daily Burn:".ljust(30) + f"{432}".ljust(16) + "kcal │")
+    print(li_mid)
+    print("│ Total Consumed:".ljust(30) + f"{1125}".ljust(16) + "kcal │")
+    print("│ Total Burned:".ljust(30) + f"{865}".ljust(16) + "kcal │")
+    print("│ Total TDEE Goal:".ljust(30) + f"{4804}".ljust(16) + "kcal │")
+    print("│ Overall Net Balance:".ljust(30) + f"{-4544}".ljust(16) + "kcal │")
+    print(li_down)
+    print()
+
+
+# Main part
+if __name__ == "__main__":
+    db = {
+        "date": [],
+        "meals": [],
+        "exercises": [] 
+    }
+
+    dash_long = "─" * 119 #119
+    line_long_up = f"┌{dash_long}┐"
+    line_long_down = f"└{dash_long}┘"
+
+    entree_keys = list(FOOD_DATA['entrees'].keys())
+    dessert_keys = list(FOOD_DATA['desserts'].keys())
+    drink_keys = list(FOOD_DATA['drinks'].keys())
+
+    # format_entree_data(entree_keys)
+    # format_dessert_drink_data(dessert_keys)
+    # format_dessert_drink_data(drink_keys)
+
+    invalid = "Invalid input."
+
+    usr_name, usr_gender, usr_age, usr_weight, usr_height = ask_usr()
+    usr_activity_level = ask_activity_level(usr_name, 100)
+    while True:
+        usr_choice = main_page()
+        if usr_choice == 6:
+            print(f"Goodbye, {usr_name}!")
+            break
+        if usr_choice == 5:
+            show_full_history([2025, 10, 1])
+        if usr_choice == 4:
+            show_day_summary([2025, 10, 1])
+        if usr_choice == 3:
+            print("REMOVE ENTRY\n")
+        if usr_choice == 2:
+            add_exercise()
+        if usr_choice == 1:
+            add_meal()
