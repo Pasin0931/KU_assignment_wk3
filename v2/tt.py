@@ -234,7 +234,7 @@ def ask_usr():
     return name, gender, age, weight, height
 
 
-def ask_activity_level(username, tdee):
+def ask_activity_level(username, gender, w, h, age):
     while True:
         print("--- Activity Level ---")
         print("1. Sedentary (little or no exercise)\n" \
@@ -245,18 +245,33 @@ def ask_activity_level(username, tdee):
         
         try:
             activity_level = int(input("Choose your activity level (1-5): "))
-            if activity_level > 0 and activity_level < 6:
-                print()
+            if 1 <= activity_level <= 5:
                 break
             else:
-                print()
                 print("Please enter a number between 1-5.")
         except ValueError:
-            print()
             print(invalid)
 
-    print(f"Profile created for {username}. Your TDEE is {tdee} kcal.\n") # tdee --------------------------
-    return activity_level
+    if activity_level == 1:
+        activity_factor = 1.2
+    elif activity_level == 2:
+        activity_factor = 1.375
+    elif activity_level == 3:
+        activity_factor = 1.55
+    elif activity_level == 4:
+        activity_factor = 1.725
+    elif activity_level == 5:
+        activity_factor = 1.9
+    
+    if gender == "M":
+        BMR = 88.362 + (13.397 * w) + (4.799 * h) - (5.677 * age)
+    elif gender == "F":
+        BMR = 447.593 + (9.247 * w) + (3.098 * h) - (4.330 * age)
+    
+    tdee = BMR * activity_factor
+    
+    print(f"Profile created for {username}. Your TDEE is {tdee:.0f} kcal.\n")
+    return activity_level, tdee
 
 
 def main_page():
@@ -282,6 +297,7 @@ def main_page():
 
 
 def add_meal():
+    overall_meals = []
     print("--- Adding Your Meals ---")
     while True:
         try:
@@ -290,7 +306,11 @@ def add_meal():
             year, month, day = map(int, ymd)
             
             if year > 0 and 1 <= month <= 12 and 1 <= day <= 31:
-                break
+                try:
+                    datetime.date(year, month, day)
+                    break
+                except ValueError:
+                    print("Please enter a proper date.")
             else:
                 print("Please enter a proper date.")
                 
@@ -304,10 +324,7 @@ def add_meal():
         except ValueError:
             print(invalid)
 
-    user_meals = []
     for meal_num in range (1, meal_amount + 1):
-        this_meal = []
-
         print(f"\n--- Meal #{meal_num} ---\n")
 
         print("Entree Choices:")
@@ -316,10 +333,12 @@ def add_meal():
             try:
                 entree_choice = int(input("Choose a Entree by number (1-25): "))
                 if entree_choice > 0 and entree_choice < 26:
+                    selected_meal = entree_keys[entree_choice - 1]
+                    selected_meal_kcal = FOOD_DATA["entrees"][selected_meal]
                     break
             except ValueError:
                 print(invalid)
-        this_meal.append(entree_choice)
+        overall_meals.append([selected_meal, selected_meal_kcal])
 
         print("\nDessert Choices:")
         format_dessert_drink_data(dessert_keys)
@@ -327,10 +346,12 @@ def add_meal():
             try:
                 dessert_choice = int(input("Choose a Dessert by number (1-10): "))
                 if dessert_choice > 0 and dessert_choice < 11:
+                    selected_dessert = dessert_keys[dessert_choice - 1]
+                    selected_dessert_kcal = FOOD_DATA["desserts"][selected_dessert]
                     break
             except ValueError:
                 print(invalid)
-        this_meal.append(dessert_choice)
+        overall_meals.append([selected_dessert, selected_dessert_kcal])
 
         print("\nDrink Choices:")
         format_dessert_drink_data(drink_keys)
@@ -338,14 +359,16 @@ def add_meal():
             try:
                 drink_choice = int(input("Choose a Dessert by number (1-10): "))
                 if drink_choice > 0 and drink_choice < 11:
+                    selected_drink = drink_keys[drink_choice - 1]
+                    selected_drink_kcal = FOOD_DATA['drinks'][selected_drink]
                     break
             except ValueError:
                 print(invalid)
-        this_meal.append(drink_choice)
-        user_meals.append(this_meal)
+        overall_meals.append([selected_drink, selected_drink_kcal])
 
     print("\nMeals added successfully!\n")
-    return [year, month, day], user_meals
+    # print(this_meal)
+    return year, month, day, overall_meals
 
 
 def add_exercise():
@@ -357,19 +380,25 @@ def add_exercise():
             year, month, day = map(int, ymd)
             
             if year > 0 and 1 <= month <= 12 and 1 <= day <= 31:
-                break
+                try:
+                    datetime.date(year, month, day)
+                    break
+                except ValueError:
+                    print("Please enter a proper date.")
             else:
                 print("Please enter a proper date.")
                 
         except ValueError:
             print(invalid)
-    
+
     print("\nExercise Choices:")
     format_exercise_data(EXERCISE_DATA)
     while True:
         try:
             exercise_choice = int(input("Choose a Exercise by number (1-7): "))
             if exercise_choice > 0 and exercise_choice < 8:
+                this_exercise = exercise_keys[exercise_choice - 1]
+                burn_per_hour = EXERCISE_DATA[this_exercise]
                 break
         except ValueError:
             print(invalid)
@@ -377,12 +406,14 @@ def add_exercise():
     while True:
         try:
             exercise_duration = float(input("Enter duration for running in minutes: "))
+            burned_kcal = (exercise_duration * burn_per_hour) / 60
+            burned_kcal = int(burned_kcal)
             break
         except ValueError:
             print(invalid)
 
-    print(f"\nLogged running for {exercise_duration:.1f} minutes, burning 550 kcal.\n") # ----------------------------------------------
-    return [year, month, day], exercise_choice, exercise_duration # didnt calulated burned cal yet.
+    print(f"\nLogged {this_exercise} for {exercise_duration:.1f} minutes, burning {burned_kcal} kcal.\n") # ----------------------------------------------
+    return year, month, day, this_exercise, burn_per_hour, burned_kcal,  
 
 
 # def remove_entry():
@@ -464,11 +495,12 @@ def show_full_history(db):
 
 
 # Main part
+import datetime
+
 if __name__ == "__main__":
     db = {
-        "date": [],
-        "meals": [],
-        "exercises": [] 
+        "meals": {},
+        "exercises": {}
     }
 
     dash_long = "─" * 119 #119
@@ -479,6 +511,8 @@ if __name__ == "__main__":
     dessert_keys = list(FOOD_DATA['desserts'].keys())
     drink_keys = list(FOOD_DATA['drinks'].keys())
 
+    exercise_keys = list(EXERCISE_DATA.keys())
+
     # format_entree_data(entree_keys)
     # format_dessert_drink_data(dessert_keys)
     # format_dessert_drink_data(drink_keys)
@@ -486,19 +520,35 @@ if __name__ == "__main__":
     invalid = "Invalid input."
 
     usr_name, usr_gender, usr_age, usr_weight, usr_height = ask_usr()
-    usr_activity_level = ask_activity_level(usr_name, 100)
+    usr_activity_level, usr_tdee = ask_activity_level(usr_name, usr_gender, usr_weight, usr_height, usr_age)
     while True:
         usr_choice = main_page()
         if usr_choice == 6:
             print(f"Goodbye, {usr_name}!")
             break
-        if usr_choice == 5:
+
+        elif usr_choice == 5:
             show_full_history([2025, 10, 1])
-        if usr_choice == 4:
+
+        elif usr_choice == 4:
             show_day_summary([2025, 10, 1])
-        if usr_choice == 3:
+
+        elif usr_choice == 3:
             print("REMOVE ENTRY\n")
-        if usr_choice == 2:
-            add_exercise()
-        if usr_choice == 1:
-            add_meal()
+
+        elif usr_choice == 2:
+            year, month, day, exercise_name, kcal_burn_per_hour, kcal_burned = add_exercise()
+            if f"{year}-{month}-{day}" not in list(db["meals"].keys()):
+                db["exercises"][f"{year}-{month}-{day}"] = [exercise_name, kcal_burn_per_hour, kcal_burned]
+            else:
+                db["exercises"][f"{year}-{month}-{day}"].update(meal_data)
+            print(db)
+
+        elif usr_choice == 1:
+            year, month, day, meal_data = add_meal()
+            if f"{year}-{month}-{day}" not in list(db["meals"].keys()):
+                db["meals"][f"{year}-{month}-{day}"] = meal_data
+            else:
+                db["meals"][f"{year}-{month}-{day}"].update(meal_data)
+            print(db)
+        
