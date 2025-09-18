@@ -297,7 +297,6 @@ def main_page():
 
 
 def add_meal():
-    overall_meals = []
     print("--- Adding Your Meals ---")
     while True:
         try:
@@ -324,7 +323,9 @@ def add_meal():
         except ValueError:
             print(invalid)
 
-    for meal_num in range (1, meal_amount + 1):
+    overall_datas = []
+    
+    for meal_num in range(1, meal_amount + 1):
         print(f"\n--- Meal #{meal_num} ---\n")
 
         print("Entree Choices:")
@@ -338,7 +339,6 @@ def add_meal():
                     break
             except ValueError:
                 print(invalid)
-        overall_meals.append([selected_meal, selected_meal_kcal])
 
         print("\nDessert Choices:")
         format_dessert_drink_data(dessert_keys)
@@ -351,24 +351,25 @@ def add_meal():
                     break
             except ValueError:
                 print(invalid)
-        overall_meals.append([selected_dessert, selected_dessert_kcal])
 
         print("\nDrink Choices:")
         format_dessert_drink_data(drink_keys)
         while True:
             try:
-                drink_choice = int(input("Choose a Dessert by number (1-10): "))
+                drink_choice = int(input("Choose a Drink by number (1-10): "))
                 if drink_choice > 0 and drink_choice < 11:
                     selected_drink = drink_keys[drink_choice - 1]
                     selected_drink_kcal = FOOD_DATA['drinks'][selected_drink]
                     break
             except ValueError:
                 print(invalid)
-        overall_meals.append([selected_drink, selected_drink_kcal])
+
+        overall_datas.append({selected_meal: selected_meal_kcal})
+        overall_datas.append({selected_dessert: selected_dessert_kcal})
+        overall_datas.append({selected_drink: selected_drink_kcal})
 
     print("\nMeals added successfully!\n")
-    # print(this_meal)
-    return year, month, day, overall_meals
+    return year, month, day, overall_datas
 
 
 def add_exercise():
@@ -412,8 +413,11 @@ def add_exercise():
         except ValueError:
             print(invalid)
 
-    print(f"\nLogged {this_exercise} for {exercise_duration:.1f} minutes, burning {burned_kcal} kcal.\n") # ----------------------------------------------
-    return year, month, day, this_exercise, burn_per_hour, burned_kcal,  
+    print(f"\nLogged {this_exercise} for {exercise_duration:.1f} minutes, burning {burned_kcal} kcal.\n")
+
+    dict_form = [{this_exercise: burned_kcal}]
+
+    return year, month, day, this_exercise, burn_per_hour, burned_kcal, dict_form
 
 
 # def remove_entry():
@@ -537,11 +541,12 @@ if __name__ == "__main__":
             print("REMOVE ENTRY\n")
 
         elif usr_choice == 2:
-            year, month, day, exercise_name, kcal_burn_per_hour, kcal_burned = add_exercise()
-            if f"{year}-{month}-{day}" not in list(db["meals"].keys()):
-                db["exercises"][f"{year}-{month}-{day}"] = [exercise_name, kcal_burn_per_hour, kcal_burned]
+            year, month, day, exercise_name, kcal_burn_per_hour, kcal_burned, dict_data = add_exercise()
+            if f"{year}-{month}-{day}" not in list(db["exercises"].keys()):
+                db["exercises"][f"{year}-{month}-{day}"] = dict_data
             else:
-                db["exercises"][f"{year}-{month}-{day}"].update(meal_data)
+                for i in dict_data:
+                    db["exercises"][f"{year}-{month}-{day}"].append(i)
             print(db)
 
         elif usr_choice == 1:
@@ -549,6 +554,7 @@ if __name__ == "__main__":
             if f"{year}-{month}-{day}" not in list(db["meals"].keys()):
                 db["meals"][f"{year}-{month}-{day}"] = meal_data
             else:
-                db["meals"][f"{year}-{month}-{day}"].update(meal_data)
+                for i in meal_data:
+                    db["meals"][f"{year}-{month}-{day}"].append(i)
             print(db)
         
