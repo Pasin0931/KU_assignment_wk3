@@ -270,7 +270,7 @@ def ask_activity_level(username, gender, w, h, age):
     
     tdee = BMR * activity_factor
     
-    print(f"Profile created for {username}. Your TDEE is {tdee:.0f} kcal.\n")
+    print(f"\nProfile created for {username}. Your TDEE is {tdee:.0f} kcal.\n")
     return activity_level, tdee
 
 
@@ -424,56 +424,92 @@ def add_exercise():
 
 
 
-def show_day_summary(db):
-    line_ = "─" * 69 # 70
-    line_1 = "─" * 69 # 52
-    line_2 = "─" * 69 # 17
+def show_day_summary(db, tdee):
+    line_ = "─" * 69
+    line_1 = "─" * 69
+    line_2 = "─" * 69
 
     li_up = f"┌{line_}┐"
     li_mid = f"├{line_1}┤"
     li_down = f"└{line_}┘"
 
     print("--- Daily Summary ---")
-    # while True:
-    #     try:
-    #         date_in = input("Enter the date (YYYY-MM-DD): ").split("-")
-    #         date_in[0] = int(date_in[0])
-    #         date_in[1] = int(date_in[1])
-    #         date_in[2] = int(date_in[2])
-    #         if date_in in db[0]:
-    #             break
-    #         else:
-    #             print("No match... try again.")
-    #     except ValueError:
-    #         print(invalid)
+    while True:
+        try:
+            date_in = input("Enter the date (YYYY-MM-DD): ").split("-")
+            date_in[0] = int(date_in[0])
+            date_in[1] = int(date_in[1])
+            date_in[2] = int(date_in[2])
+            pack_ = f"{date_in[0]}-{date_in[1]}-{date_in[2]}"
+            if pack_ in db["meals"] or pack_ in db["exercises"]:
+                break
+            else:
+                print("No match... try again.")
+        except ValueError:
+            print(invalid)
 
-    # text_summary = f"Summary for {date_in[0]}-{date_in[1]}-{date_in[2]}"
+    meal_day = ""
+    exercise_day = ""
+
+    for key, value in db["meals"].items():
+        if key == pack_:
+            meal_day = value
+
+    for key, value in db["exercises"].items():
+        if key == pack_:
+            exercise_day = value
+
+    entree_all = meal_day[0:-1:3]
+    dessert_all = meal_day[1:-1:3]
+    drink_all = meal_day[2::3]
+
+    text_summary = f"Summary for {date_in[0]}-{date_in[1]}-{date_in[2]}"
 
     print()
     print(li_up)
-    print("|" + "Summary for 2025-10-10".center(69) + "|")
+    print("|" + f"{text_summary}".center(69) + "|")
     print(li_mid)
     print("|" + "Meals Consumed".center(69) + "|")
     print(li_mid)
     print("| " + "Meal #".ljust(9) + "| " + "Entree".ljust(19) + "| " + "Dessert".ljust(19) + "| " + "Drink".ljust(15) + "|")
     print(li_mid)
 
-    print("| " + "1".ljust(9) + "| " + "Fried Chicken".ljust(19) + "| " + "None".ljust(19) + "| " + "Soda".ljust(15) + "|")
+    total_consumed = 0
+    count = 1
+    for i in range(len(entree_all)):
+        entree = list(entree_all[i].keys())[0]
+        dessert = list(dessert_all[i].keys())[0]
+        drink = list(drink_all[i].keys())[0]
+        entree_kcal = entree_all[i][entree]
+        dessert_kcal = dessert_all[i][dessert]
+        drink_kcal = drink_all[i][drink]
+        total_consumed += entree_kcal + dessert_kcal + drink_kcal
+        print("| " + f"{count}".ljust(9) + "| " + entree.ljust(19) + "| " + dessert.ljust(19) + "| " + drink.ljust(15) + "|")
+        count += 1
     
     print(li_mid)
     print("| " + "Exercises Logged".ljust(67) + " |")
 
-    print("|  " + "1. running".ljust(47) + "( 550 kcal burned )".ljust(19) + " |")
+    total_burned = 0
+    count = 1
+    for i in exercise_day:
+        key = list(i.keys())[0]
+        value = i[key]
+        total_burned += value
+        print("|  " + f"{count}. {key}".ljust(47) + f"({value} kcal burned)".ljust(19) + " |")
+        count += 1
 
     print(li_mid)
     print("|" + "Totals".center(69) + "|")
     print(li_mid)
-    print("| " + "Consumed:".ljust(16) + "100".ljust(47) + "kcal |")
-    print("| " + "Burned:".ljust(16) + "200".ljust(47) + "kcal |")
-    print("| " + "TDEE Goal:".ljust(16) + "300".ljust(47) + "kcal |")
-    print("| " + "Net Balance:".ljust(16) + "400".ljust(47) + "kcal |")
+    print("| " + "Consumed:".ljust(16) + f"{total_consumed}".ljust(47) + "kcal |")
+    print("| " + "Burned:".ljust(16) + f"{total_burned}".ljust(47) + "kcal |")
+    print("| " + "TDEE Goal:".ljust(16) + f"{tdee}".ljust(47) + "kcal |")
+    net_balance = total_consumed - total_burned - tdee - 1
+    print("| " + "Net Balance:".ljust(16) + f"{round(net_balance)}".ljust(47) + "kcal |")
     print(li_down)
     print()
+
 
 
 def show_full_history(db):
@@ -525,6 +561,7 @@ if __name__ == "__main__":
 
     usr_name, usr_gender, usr_age, usr_weight, usr_height = ask_usr()
     usr_activity_level, usr_tdee = ask_activity_level(usr_name, usr_gender, usr_weight, usr_height, usr_age)
+    usr_tdee = round(usr_tdee)
     while True:
         usr_choice = main_page()
         if usr_choice == 6:
@@ -532,10 +569,10 @@ if __name__ == "__main__":
             break
 
         elif usr_choice == 5:
-            show_full_history([2025, 10, 1])
+            show_full_history(db)
 
         elif usr_choice == 4:
-            show_day_summary([2025, 10, 1])
+            show_day_summary(db, usr_tdee)
 
         elif usr_choice == 3:
             print("REMOVE ENTRY\n")
@@ -557,4 +594,5 @@ if __name__ == "__main__":
                 for i in meal_data:
                     db["meals"][f"{year}-{month}-{day}"].append(i)
             print(db)
+            print(year, month, day)
         
