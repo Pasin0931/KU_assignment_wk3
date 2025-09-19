@@ -288,7 +288,7 @@ def main_page():
             if choice > 0 and choice < 7:
                 break
             else:
-                print("Please enter a number between 1-6.")
+                print("Invalid choice, please try again.\n")
         except ValueError:
             print()
             print(invalid)
@@ -309,9 +309,9 @@ def add_meal():
                     datetime.date(year, month, day)
                     break
                 except ValueError:
-                    print("Please enter a proper date.")
+                    print("Invalid date format.")
             else:
-                print("Please enter a proper date.")
+                print("Invalid date format.")
                 
         except ValueError:
             print(invalid)
@@ -319,7 +319,10 @@ def add_meal():
     while True:
         try:
             meal_amount = int(input("How many more meals to add? "))
-            break
+            if meal_amount <= 0:
+                print('Invalid number.')
+            else:
+                break
         except ValueError:
             print(invalid)
 
@@ -332,11 +335,13 @@ def add_meal():
         format_entree_data(entree_keys)
         while True:
             try:
-                entree_choice = int(input("Choose a Entree by number (1-25): "))
+                entree_choice = int(input("Choose an Entree by number (1-25): "))
                 if entree_choice > 0 and entree_choice < 26:
                     selected_meal = entree_keys[entree_choice - 1]
                     selected_meal_kcal = FOOD_DATA["entrees"][selected_meal]
                     break
+                else:
+                    print("Invalid number.")
             except ValueError:
                 print(invalid)
 
@@ -349,6 +354,8 @@ def add_meal():
                     selected_dessert = dessert_keys[dessert_choice - 1]
                     selected_dessert_kcal = FOOD_DATA["desserts"][selected_dessert]
                     break
+                else:
+                    print("Invalid number.")
             except ValueError:
                 print(invalid)
 
@@ -361,6 +368,8 @@ def add_meal():
                     selected_drink = drink_keys[drink_choice - 1]
                     selected_drink_kcal = FOOD_DATA['drinks'][selected_drink]
                     break
+                else:
+                    print("Invalid number.")
             except ValueError:
                 print(invalid)
 
@@ -396,20 +405,25 @@ def add_exercise():
     format_exercise_data(EXERCISE_DATA)
     while True:
         try:
-            exercise_choice = int(input("Choose a Exercise by number (1-7): "))
+            exercise_choice = int(input("Choose an Exercise by number (1-7): "))
             if exercise_choice > 0 and exercise_choice < 8:
                 this_exercise = exercise_keys[exercise_choice - 1]
                 burn_per_hour = EXERCISE_DATA[this_exercise]
                 break
+            else:
+                print("Invalid number.")
         except ValueError:
-            print(invalid)
+            print("Invalid number.")
         
     while True:
         try:
             exercise_duration = float(input("Enter duration for running in minutes: "))
-            burned_kcal = (exercise_duration * burn_per_hour) / 60
-            burned_kcal = int(burned_kcal)
-            break
+            if exercise_duration > 0:
+                burned_kcal = (exercise_duration * burn_per_hour) / 60
+                burned_kcal = int(burned_kcal)
+                break
+            else:
+                print("Duration must be positive.")
         except ValueError:
             print(invalid)
 
@@ -422,10 +436,14 @@ def add_exercise():
 
 def remove_entry(db):
     print("--- Remove an Entry ---")
-    date_in = input("Enter the date (YYYY-MM-DD): ")
+    date_in = input("Enter the date (YYYY-MM-DD): ").split("-")
+    year_ = int(date_in[0])
+    month_ = int(date_in[1])
+    day_ = int(date_in[2])
+    date_in = f"{year_}-{month_}-{day_}"
 
     if date_in not in db["meals"] and date_in not in db["exercises"]:
-        print("No records found for that date.\n")
+        print("No entries for this date.\n")
         return
 
     while True:
@@ -515,7 +533,8 @@ def show_day_summary(db, tdee):
             if pack_ in db["meals"] or pack_ in db["exercises"]:
                 break
             else:
-                print("No match... try again.")
+                print("No data found for that date.\n")
+                return None
         except ValueError:
             print(invalid)
 
@@ -625,8 +644,8 @@ def show_full_history(db, tdee):
         print(f"  - Consumed: {daily_consumed} kcal | Burned: {daily_burned} kcal\n")
 
     days_count = len(days_logged)
-    avg_consumed = round(total_consumed / days_count, 1) if days_count else 0
-    avg_burned = round(total_burned / days_count, 1) if days_count else 0
+    avg_consumed = round(total_consumed / days_count) if days_count else 0
+    avg_burned = round(total_burned / days_count) if days_count else 0
     total_tdee = tdee * days_count
     overall_net = total_consumed - total_burned - total_tdee
 
@@ -634,13 +653,13 @@ def show_full_history(db, tdee):
     print("│" + "Overall Summary".center(45) + "│")
     print(li_mid)
     print("│ Days Logged:".ljust(30) + f"{days_count}".ljust(14) + "  │")
-    print("│ Avg Daily Consumption:".ljust(30) + f"{round(avg_consumed):.2f}".ljust(9) + "  kcal │")
-    print("│ Avg Daily Burn:".ljust(30) + f"{round(avg_burned):.2f}".ljust(9) + "  kcal │")
+    print("│ Avg Daily Consumption:".ljust(30) + f"{round(avg_consumed):.0f}".ljust(9) + "  kcal │")
+    print("│ Avg Daily Burn:".ljust(30) + f"{round(avg_burned):.0f}".ljust(9) + "  kcal │")
     print(li_mid)
-    print("│ Total Consumed:".ljust(30) + f"{total_consumed}".ljust(9) + "  kcal │")
-    print("│ Total Burned:".ljust(30) + f"{total_burned + 1}".ljust(9) + "  kcal │")
+    print("│ Total Consumed:".ljust(30) + f"{round(total_consumed)}".ljust(9) + "  kcal │")
+    print("│ Total Burned:".ljust(30) + f"{round(total_burned)}".ljust(9) + "  kcal │")
     print("│ Total TDEE Goal:".ljust(30) + f"{total_tdee}".ljust(9) + "  kcal │")
-    print("│ Overall Net Balance:".ljust(30) + f"{overall_net - 1}".ljust(9) + "  kcal │")
+    print("│ Overall Net Balance:".ljust(30) + f"{round(overall_net)}".ljust(9) + "  kcal │")
     print(li_down)
     print()
 
@@ -696,7 +715,7 @@ if __name__ == "__main__":
             else:
                 for i in dict_data:
                     db["exercises"][f"{year}-{month}-{day}"].append(i)
-            print(db)
+            # print(db)
 
         elif usr_choice == 1:
             year, month, day, meal_data = add_meal()
@@ -705,6 +724,6 @@ if __name__ == "__main__":
             else:
                 for i in meal_data:
                     db["meals"][f"{year}-{month}-{day}"].append(i)
-            print(db)
-            print(year, month, day)
+            # print(db)
+            # print(year, month, day)
         
