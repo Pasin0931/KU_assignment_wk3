@@ -1,0 +1,73 @@
+What I have completed:
+
+- Functions
+
+    --> format_exercise_data
+        The function correctly formats exercise data for display in a two-column table layout.
+        Input data is processed to create numbered options in two balanced columns.
+        Proper table formatting with borders ensures clear visual presentation.
+
+    --> format_entree_data
+        This function formats entree data for display in a five-column table layout.
+        Menu items are distributed across five rows with proper numbering.
+        Maintains consistent table formatting with appropriate borders and spacing.
+
+    --> format_dessert_drink_data
+        Formats dessert or drink data for display in a two-column table layout.
+        Distributes menu items evenly between two columns with sequential numbering.
+        Uses consistent table formatting for visual clarity.
+
+    --> ask_usr
+        Prompts the user for profile information including name, gender, age, weight and height.
+        Input validation ensures all values are positive and gender is either M or F.
+        Returns all collected user data as a tuple for further processing.
+
+    --> ask_activity_level
+        Prompts the user to select their activity level from five predefined options.
+        Calculates TDEE (Total Daily Energy Expenditure) based on user's profile and activity level.
+        Uses appropriate formulas for male and female users to calculate BMR and TDEE.
+
+    --> main_page
+        Displays the main menu with six options for the calories tracker program.
+        Validates user input to ensure only valid menu choices are accepted.
+        Returns the user's selected menu option for further processing.
+
+    --> add_meal
+        Handles the process of adding meal entries to the database.
+        Collects date information and validates it for proper format.
+        Guides user through selecting entrees, desserts, and drinks from formatted menus.
+        Calculates total calories for each meal and stores the data appropriately.
+
+    --> add_exercise
+        Handles the process of adding exercise entries to the database.
+        Collects date information and validates it for proper format.
+        Guides user through selecting exercises and entering duration.
+        Calculates calories burned based on exercise type and duration.
+
+    --> remove_entry
+        Allows users to remove either meal or exercise entries from specific dates.
+        Displays available entries for the selected date and type.
+        Validates user selection and removes the chosen entry from the database.
+
+    --> show_day_summary
+        Displays a detailed summary of meals and exercises for a specific day.
+        Shows all consumed meals with their components and calorie counts.
+        Lists all exercises performed with calories burned.
+        Calculates and displays total consumed, total burned, TDEE goal, and net balance.
+
+    --> show_full_history
+        Displays a comprehensive summary of all logged data across all dates.
+        Shows daily breakdown of calories consumed and burned.
+        Calculates and displays averages, totals, and overall net balance.
+        Uses formatted tables for clear presentation of summary data.
+
+- Main Part
+    1. User profile information is obtained from ask_usr function.
+    2. Activity level and TDEE are calculated using ask_activity_level function.
+    3. The program maintains a database structure for storing meals and exercises.
+    4. The main loop processes user menu selections and calls appropriate functions.
+    5. All meal and exercise data is stored with date information for tracking.
+    6. Summary functions provide detailed reports on daily and overall calorie balance.
+    7. The program handles proper data validation throughout all user interactions.
+
+What I haven't completed: None
