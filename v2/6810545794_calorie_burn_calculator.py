@@ -1,10 +1,3 @@
-"""
-Calorie and Exercise Tracker Program.
-
-This program allows users to track their meals and exercises,
-calculate TDEE, and monitor daily and overall calorie balance.
-"""
-
 FOOD_DATA = {
     'entrees': {
         'porridge': 200,
