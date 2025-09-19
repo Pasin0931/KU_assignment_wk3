@@ -420,8 +420,79 @@ def add_exercise():
     return year, month, day, this_exercise, burn_per_hour, burned_kcal, dict_form
 
 
-# def remove_entry():
+def remove_entry(db):
+    print("--- Remove an Entry ---")
+    date_in = input("Enter the date (YYYY-MM-DD): ")
 
+    if date_in not in db["meals"] and date_in not in db["exercises"]:
+        print("No records found for that date.\n")
+        return
+
+    while True:
+        choice = input("Remove a 'meal' or an 'exercise'? ").strip().lower()
+        if choice in ["meal", "exercise"]:
+            break
+        else:
+            print("Please type 'meal' or 'exercise'.")
+
+    if choice == "meal":
+        if date_in not in db["meals"] or not db["meals"][date_in]:
+            print("No entries for this date.\n")
+            return
+
+        meals = db["meals"][date_in]
+        entree_all = meals[0:-1:3]
+        dessert_all = meals[1:-1:3]
+        drink_all = meals[2::3]
+
+        print("\n--- Select Meal to Remove ---")
+        for i in range(len(entree_all)):
+            entree = list(entree_all[i].keys())[0]
+            dessert = list(dessert_all[i].keys())[0]
+            drink = list(drink_all[i].keys())[0]
+            print(f"{i+1}. Entree: {entree}, Dessert: {dessert}, Drink: {drink}")
+
+        while True:
+            try:
+                idx = int(input("Enter the number of the meal to remove: "))
+                if 1 <= idx <= len(entree_all):
+                    break
+                else:
+                    print("Please enter a valid number.")
+            except ValueError:
+                print(invalid)
+
+        rm_idx = (idx - 1) * 3
+        removed = db["meals"][date_in][rm_idx:rm_idx+3]
+        del db["meals"][date_in][rm_idx:rm_idx+3]
+
+        print(f"Meal #{idx} has been removed.\n")
+
+    elif choice == "exercise":
+        if date_in not in db["exercises"] or not db["exercises"][date_in]:
+            print("No exercises for this date.\n")
+            return
+
+        exercises = db["exercises"][date_in]
+        print("\n--- Select Exercise to Remove ---")
+        for i, ex in enumerate(exercises, 1):
+            name = list(ex.keys())[0]
+            kcal = ex[name]
+            print(f"{i}. {name} ({kcal} kcal burned)")
+
+        while True:
+            try:
+                idx = int(input("Enter the number of the exercise to remove: "))
+                if 1 <= idx <= len(exercises):
+                    break
+                else:
+                    print("Please enter a valid number.")
+            except ValueError:
+                print("Invalid input.")
+
+        removed = db["exercises"][date_in].pop(idx - 1)
+        name = list(removed.keys())[0]
+        print(f"Exercise '{name}' has been removed.\n")
 
 
 def show_day_summary(db, tdee):
@@ -512,26 +583,67 @@ def show_day_summary(db, tdee):
 
 
 
-def show_full_history(db):
-    line = "─" * 50
+def show_full_history(db, tdee):
+    line = "─" * 45
     li_up = f"┌{line}┐"
     li_mid = f"├{line}┤"
     li_down = f"└{line}┘"
 
-    print()
+    days_logged = sorted(set(list(db["meals"].keys()) + list(db["exercises"].keys())))
+
+    total_consumed = 0
+    total_burned = 0
+
+    print("\n--- Full History Summary ---\n")
+    print("--- Daily Breakdown ---\n")
+
+    for day in days_logged:
+        meals = db["meals"].get(day, [])
+        exercises = db["exercises"].get(day, [])
+
+        daily_consumed = 0
+        daily_burned = 0
+
+        entree_all = meals[0:-1:3]
+        dessert_all = meals[1:-1:3]
+        drink_all = meals[2::3]
+
+        for i in range(len(entree_all)):
+            entree_kcal = list(entree_all[i].values())[0]
+            dessert_kcal = list(dessert_all[i].values())[0]
+            drink_kcal = list(drink_all[i].values())[0]
+            daily_consumed += entree_kcal + dessert_kcal + drink_kcal
+
+        for i in exercises:
+            kcal = list(i.values())[0]
+            daily_burned += kcal
+
+        total_consumed += daily_consumed
+        total_burned += daily_burned
+
+        print(f"Date: {day}")
+        print(f"  - Consumed: {daily_consumed} kcal | Burned: {daily_burned} kcal\n")
+
+    days_count = len(days_logged)
+    avg_consumed = round(total_consumed / days_count, 1) if days_count else 0
+    avg_burned = round(total_burned / days_count, 1) if days_count else 0
+    total_tdee = tdee * days_count
+    overall_net = total_consumed - total_burned - total_tdee
+
     print(li_up)
-    print("│" + "Overall Summary".center(50) + "│")
+    print("│" + "Overall Summary".center(45) + "│")
     print(li_mid)
-    print("│ Days Logged:".ljust(30) + f"{2}".ljust(21) + "│")
-    print("│ Avg Daily Consumption:".ljust(30) + f"{562}".ljust(16) + "kcal │")
-    print("│ Avg Daily Burn:".ljust(30) + f"{432}".ljust(16) + "kcal │")
+    print("│ Days Logged:".ljust(30) + f"{days_count}".ljust(14) + "  │")
+    print("│ Avg Daily Consumption:".ljust(30) + f"{round(avg_consumed):.2f}".ljust(9) + "  kcal │")
+    print("│ Avg Daily Burn:".ljust(30) + f"{round(avg_burned):.2f}".ljust(9) + "  kcal │")
     print(li_mid)
-    print("│ Total Consumed:".ljust(30) + f"{1125}".ljust(16) + "kcal │")
-    print("│ Total Burned:".ljust(30) + f"{865}".ljust(16) + "kcal │")
-    print("│ Total TDEE Goal:".ljust(30) + f"{4804}".ljust(16) + "kcal │")
-    print("│ Overall Net Balance:".ljust(30) + f"{-4544}".ljust(16) + "kcal │")
+    print("│ Total Consumed:".ljust(30) + f"{total_consumed}".ljust(9) + "  kcal │")
+    print("│ Total Burned:".ljust(30) + f"{total_burned + 1}".ljust(9) + "  kcal │")
+    print("│ Total TDEE Goal:".ljust(30) + f"{total_tdee}".ljust(9) + "  kcal │")
+    print("│ Overall Net Balance:".ljust(30) + f"{overall_net - 1}".ljust(9) + "  kcal │")
     print(li_down)
     print()
+
 
 
 # Main part
@@ -569,13 +681,13 @@ if __name__ == "__main__":
             break
 
         elif usr_choice == 5:
-            show_full_history(db)
+            show_full_history(db, usr_tdee)
 
         elif usr_choice == 4:
             show_day_summary(db, usr_tdee)
 
         elif usr_choice == 3:
-            print("REMOVE ENTRY\n")
+            remove_entry(db)
 
         elif usr_choice == 2:
             year, month, day, exercise_name, kcal_burn_per_hour, kcal_burned, dict_data = add_exercise()
